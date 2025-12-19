@@ -2,7 +2,7 @@
 import mongoose from "mongoose"; 
 
 
-import {DB_NAME}  from "../constants";
+import {DB_NAME}  from "../constants.js";
 
 
 const connectDB = async () => {
@@ -11,7 +11,7 @@ const connectDB = async () => {
       const connectionInstance = await mongoose.connect(`${process.env.MONGODB_URI}/${DB_NAME}`)
       console.log(`\n MongoDB connected !! DB HOST : ${connectionInstance.connection.host}`);
   }catch(error){
-    console.log("MONGO ERROR ", error); 
+    console.log("MONGO connections FAILED", error); 
     process.exit(1)
   }
 }
