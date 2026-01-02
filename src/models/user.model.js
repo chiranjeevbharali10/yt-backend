@@ -34,6 +34,7 @@ const userSchema = new Schema(
     },
     watchHistory: [
       {
+        index: true,
         type: Schema.Types.ObjectId,
         ref: "Video",
       },
