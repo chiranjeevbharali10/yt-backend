@@ -17,4 +17,11 @@ app.use(express.static("public"));
 //basically for server to read your cookeies that is sent by the browser basically
 app.use(cookieParser());
 
+//routes import
+
+import userRouter from "./routes/user.routes.js";
+
+//routes declaration
+
+app.use("/api/v1/users", userRouter);
 export { app };

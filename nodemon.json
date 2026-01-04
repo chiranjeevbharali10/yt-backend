@@ -1,0 +1,10 @@
+{
+  "watch": ["src"],
+  "ext": "js,json",
+  "ignore": ["node_modules", "public"],
+  "exec": "node -r dotenv/config --experimental-json-modules src/index.js",
+  "legacyWatch": true,
+  "polling": true,
+  "delay": 1000
+}
+
