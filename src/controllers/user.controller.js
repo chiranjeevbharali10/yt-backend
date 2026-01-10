@@ -5,15 +5,31 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 //
 //
+
+
+const generateAccessAndRefreshTokens = async(userId){
+      try{
+          
+          const user = await User.FindById(user)
+          const access = user.generateAccessToken();
+          const refreshToken = user.generateRefreshToken(); 
+          
+          user.refreshToken = refreshToken;
+          await user.save({ValidateBeforeSave:false})
+          return {accessToken , refreshToken}
+  }catch(error){
+    throw new ApiError(500 , "something went wrong while generating refresh and access tokens")
+  }
+}
 const registerUser = asyncHandler(async (req, res) => {
     console.log("Request body:", req.body);
     console.log("Request files:", req.files);
-    
+
     // Ensure req.body exists
     if (!req.body) {
         throw new ApiError(400, "Request body is missing");
     }
-    
+
     // Extract fields - handle both string and array formats (multer sometimes returns arrays)
     const getFieldValue = (field) => {
         if (Array.isArray(field)) {
@@ -21,23 +37,23 @@ const registerUser = asyncHandler(async (req, res) => {
         }
         return field;
     };
-    
+
     const fullName = getFieldValue(req.body.fullName);
     const email = getFieldValue(req.body.email);
     const username = getFieldValue(req.body.username);
     const password = getFieldValue(req.body.password);
 
     // Validate that all fields exist and are non-empty strings
-    if (!fullName || typeof fullName !== 'string' || fullName.trim() === "") {
+    if (!fullName || typeof fullName !== "string" || fullName.trim() === "") {
         throw new ApiError(400, "fullName is required");
     }
-    if (!email || typeof email !== 'string' || email.trim() === "") {
+    if (!email || typeof email !== "string" || email.trim() === "") {
         throw new ApiError(400, "email is required");
     }
-    if (!username || typeof username !== 'string' || username.trim() === "") {
+    if (!username || typeof username !== "string" || username.trim() === "") {
         throw new ApiError(400, "username is required");
     }
-    if (!password || typeof password !== 'string' || password.trim() === "") {
+    if (!password || typeof password !== "string" || password.trim() === "") {
         throw new ApiError(400, "password is required");
     }
 
@@ -89,4 +105,36 @@ const registerUser = asyncHandler(async (req, res) => {
         .json(new ApiResponse(200, createdUser, "USER REGISTERED"));
 });
 
+const loginUser = asyncHandler(async (req, res) => {
+    //req body -> data
+    //username or emailfine the user
+    //password chec
+    //access and refresh token
+    //send cookie
+
+    const { email, username, password } = req.body;
+
+    if (!username || !email) {
+        throw new ApiError(400, "username or email is required");
+    }
+
+    const user = await User.findOne({
+        $or: [{ username }, { email }],
+    });
+
+    if (!user) {
+        throw new ApiError(400, "User does not exists");
+    }
+
+    const isPasswordValid = await user.isPasswordCorrect(password);
+    if (!isPasswordValid) {
+        throw new ApiError(401, "WRONG PASSWORD");
+
+
+    const {accessToken , refreshToken } = await generateAccessAndRefreshTokens(user._id)
+    }
+
+
+    
+});
 export { registerUser };
