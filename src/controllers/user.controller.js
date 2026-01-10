@@ -131,9 +131,29 @@ const loginUser = asyncHandler(async (req, res) => {
         throw new ApiError(401, "WRONG PASSWORD");
 
 
-    const {accessToken , refreshToken } = await generateAccessAndRefreshTokens(user._id)
+  
+
     }
 
+    const {accessToken , refreshToken } = await generateAccessAndRefreshTokens(user._id)
+      generateAccessAndRefreshTokens(user._id)
+
+
+    const loggedInUser = await User.findById(user._id).
+    select("-password -refreshToken")
+
+    const options = {
+      httpOnly:true, 
+      secure:true  //if this is done only server can modify these cookies
+      
+    }
+
+      return res.status(200).cookie("accessToken" , accessToken , options).cookie().json(
+          new ApiResponse(200 , 
+      {
+        user : loggedInUser , accessToken , refreshToken
+      } , "User logged In Sucessfully")
+  )
 
     
 });
